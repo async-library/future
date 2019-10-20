@@ -8,7 +8,7 @@ This repo exists to discuss and build the future version of [React Async](https:
 Join the chat on [Discord](https://discord.gg/CAYQ6mU).
 
 Project goals:
-- Create a unified package to serve as a replacement for react-async, react-async-hook and others.
+- Create a unified package to serve as a replacement for react-async, react-async-hook, react-hooks-async and others.
 - Implement this in such a way that it can be easily extended to cover additional use cases and libraries.
 - The core should not care about the UI library (React, Vue, Svelte) or state management (Redux, Mobx, Vuex).
 - Integrations will provide idiomatic APIs for various UI libraries, state managers and data fetching libraries.
