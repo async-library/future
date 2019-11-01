@@ -122,7 +122,7 @@ it("ignores outdated promises on subsequent runs", async () => {
   dispatch()
 
   const fn1 = () => new Promise(resolve => setTimeout(resolve, 0, "one"))
-  const fn2 = () => new Promise(resolve => setTimeout(resolve, 1, "two"))
+  const fn2 = () => new Promise(resolve => setTimeout(resolve, 10, "two"))
 
   const one = dispatch(start({ fn: fn1 }))
   const two = dispatch(start({ fn: fn2 }))
