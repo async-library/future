@@ -1,21 +1,23 @@
-import { start, cancel } from "./actionCreators"
-import reducer from "./reducer"
-import { register, dispatch } from "./dispatcher"
+import createApp from "./integration"
 
 let state
-let unregister
+const getState = () => state
+const setState = value => (state = value)
+
+let app
 beforeEach(() => {
+  app = createApp(getState, setState)
+})
+afterEach(() => {
+  app.destroy()
   state = undefined
-  unregister && unregister()
-  unregister = register(action => (state = reducer(state, action)))
-  expect(state.status).toBe("initial")
 })
 
 it("runs to fulfilment", async () => {
   const data = { a: 1 }
   const fn = () => Promise.resolve(data)
 
-  const done = dispatch(start({ fn }))
+  const done = app.start({ fn })
   expect(state).toEqual(
     expect.objectContaining({
       status: "pending",
@@ -47,7 +49,7 @@ it("runs to rejection", async () => {
   const error = new Error("oops")
   const fn = () => Promise.reject(error)
 
-  const done = dispatch(start({ fn }))
+  const done = app.start({ fn })
   expect(state).toEqual(
     expect.objectContaining({
       status: "pending",
@@ -81,10 +83,10 @@ it("returns to previous state when cancelled", async () => {
   const data = { a: 1 }
   const fn = () => Promise.resolve(data)
 
-  const done = dispatch(start({ fn }))
+  const done = app.start({ fn })
   expect(state.status).toBe("pending")
 
-  dispatch(cancel())
+  app.cancel()
   await done
   expect(state.status).toBe("initial")
 })
@@ -93,8 +95,8 @@ it("ignores outdated promises on subsequent runs", async () => {
   const fn1 = () => new Promise(resolve => setTimeout(resolve, 0, "one"))
   const fn2 = () => new Promise(resolve => setTimeout(resolve, 10, "two"))
 
-  const one = dispatch(start({ fn: fn1 }))
-  const two = dispatch(start({ fn: fn2 }))
+  const one = app.start({ fn: fn1 })
+  const two = app.start({ fn: fn2 })
   expect(state.status).toBe("pending")
   expect(state.fn).toBe(fn2)
 
@@ -104,4 +106,11 @@ it("ignores outdated promises on subsequent runs", async () => {
   await two
   expect(state.status).toBe("fulfilled")
   expect(state.data).toBe("two")
+})
+
+it("supports adding new data to old data", () => {
+  app.start({ fn: () => [1, 2] })
+  app.start({ fn: () => [...state.data, 3, 4] })
+
+  expect(state.data).toEqual([1, 2, 3, 4])
 })
