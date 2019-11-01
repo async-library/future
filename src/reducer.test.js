@@ -1,10 +1,12 @@
 import { start, fulfill, reject, cancel } from "./actionCreators"
 import { initialState, stateReducer, compose } from "./reducer"
+import withAbortController from "./withAbortController"
 import withMetadata from "./withMetadata"
 
 const reducer = compose(
   stateReducer,
   withMetadata,
+  withAbortController,
 )
 
 describe("without state", () => {
@@ -136,5 +138,26 @@ describe("race condition", () => {
 
     expect(state.status).toBe("fulfilled")
     expect(state.data).toBe(data2)
+  })
+})
+
+describe("with AbortController", () => {
+  it("aborts on start", () => {
+    let state = initialState
+    const abort = jest.fn()
+    state.abortController = { abort }
+
+    state = reducer(state, start({}))
+
+    expect(abort).toHaveBeenCalled()
+  })
+
+  it("creates a new AbortController on each start", () => {
+    const first = reducer(initialState, start({}))
+    expect(first.abortController).toBeInstanceOf(AbortController)
+
+    const second = reducer(first, start({}))
+    expect(second.abortController).toBeInstanceOf(AbortController)
+    expect(second.abortController).not.toBe(first.abortController)
   })
 })

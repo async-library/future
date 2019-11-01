@@ -1,4 +1,5 @@
 import * as actionHandlers from "./actionHandlers"
+import withAbortController from "./withAbortController"
 import withMetadata from "./withMetadata"
 import withStatusProps from "./withStatusProps"
 
@@ -20,4 +21,5 @@ export default compose(
   stateReducer,
   withMetadata,
   withStatusProps,
+  withAbortController,
 )
