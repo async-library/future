@@ -25,10 +25,10 @@ it("dispatches actions to all registered callbacks", () => {
   expect(callback).toHaveBeenCalledTimes(5)
 })
 
-it("invokes the provided function on start", () => {
+it("invokes the provided function on start, without arguments", () => {
   const fn = jest.fn()
   dispatch(start({ fn }))
-  expect(fn).toHaveBeenCalled()
+  expect(fn).toHaveBeenCalledWith()
 })
 
 describe("with synchronous fn", () => {
