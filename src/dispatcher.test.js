@@ -1,28 +1,35 @@
 import { start } from "./actionCreators"
-import { dispatch, register, unregister } from "./dispatcher"
+import { dispatch, register } from "./dispatcher"
 
 it("allows registering a callback that is invoked on dispatch", () => {
   const callback = jest.fn()
-  const action = {}
+  const action = { type: "foo" }
   register(callback)
   dispatch(action)
   expect(callback).toHaveBeenCalledWith(action)
 })
 
+it("initializes the callback on register", () => {
+  const callback = jest.fn()
+  register(callback)
+  expect(callback).toHaveBeenCalledWith({ type: "init" })
+})
+
 it("allows unregistering a registered callback", () => {
   const callback = jest.fn()
-  const id = register(callback)
-  dispatch()
-  unregister(id)
-  dispatch()
-  expect(callback).toHaveBeenCalledTimes(1)
+  const action = { type: "foo" }
+  const unregister = register(callback)
+  unregister()
+  dispatch(action)
+  expect(callback).not.toHaveBeenCalledWith(action)
 })
 
 it("dispatches actions to all registered callbacks", () => {
   const callback = jest.fn()
+  const action = { type: "foo" }
   for (let i = 0; i < 5; i++) register(callback)
-  dispatch()
-  expect(callback).toHaveBeenCalledTimes(5)
+  dispatch(action)
+  expect(callback).toHaveBeenCalledTimes(10)
 })
 
 it("invokes the provided function on start, without arguments", () => {

@@ -1,24 +1,17 @@
 import { start, cancel } from "./actionCreators"
 import reducer from "./reducer"
-import { dispatch, register } from "./dispatcher"
+import { register, dispatch } from "./dispatcher"
+
+let state
+let unregister
+beforeEach(() => {
+  state = undefined
+  unregister && unregister()
+  unregister = register(action => (state = reducer(state, action)))
+  expect(state.status).toBe("initial")
+})
 
 it("runs to fulfilment", async () => {
-  let state
-  register(action => (state = reducer(state, action)))
-
-  dispatch()
-  expect(state).toEqual(
-    expect.objectContaining({
-      status: "initial",
-      data: undefined,
-      error: undefined,
-      startedCount: 0,
-      finishedCount: 0,
-      startedAt: undefined,
-      finishedAt: undefined,
-    }),
-  )
-
   const data = { a: 1 }
   const fn = () => Promise.resolve(data)
 
@@ -51,22 +44,6 @@ it("runs to fulfilment", async () => {
 })
 
 it("runs to rejection", async () => {
-  let state
-  register(action => (state = reducer(state, action)))
-
-  dispatch()
-  expect(state).toEqual(
-    expect.objectContaining({
-      status: "initial",
-      data: undefined,
-      error: undefined,
-      startedCount: 0,
-      finishedCount: 0,
-      startedAt: undefined,
-      finishedAt: undefined,
-    }),
-  )
-
   const error = new Error("oops")
   const fn = () => Promise.reject(error)
 
@@ -99,10 +76,6 @@ it("runs to rejection", async () => {
 })
 
 it("returns to previous state when cancelled", async () => {
-  let state
-  register(action => (state = reducer(state, action)))
-
-  dispatch()
   expect(state.status).toBe("initial")
 
   const data = { a: 1 }
@@ -117,10 +90,6 @@ it("returns to previous state when cancelled", async () => {
 })
 
 it("ignores outdated promises on subsequent runs", async () => {
-  let state
-  register(action => (state = reducer(state, action)))
-  dispatch()
-
   const fn1 = () => new Promise(resolve => setTimeout(resolve, 0, "one"))
   const fn2 = () => new Promise(resolve => setTimeout(resolve, 10, "two"))
 

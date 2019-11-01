@@ -1,12 +1,17 @@
 import { fulfill, reject } from "./actionCreators"
 
 const callbacks = []
-const run = action => callbacks.forEach(cb => cb && cb(action))
+const run = action => callbacks.forEach(callback => callback && callback(action))
+const add = callback => callbacks.push(callback) - 1
+const remove = id => (callbacks[id] = undefined)
 
-export const register = callback => callbacks.push(callback) - 1
-export const unregister = id => (callbacks[id] = undefined)
+export const register = callback => {
+  const id = add(callback)
+  callback({ type: "init" })
+  return () => remove(id)
+}
 
-export const dispatch = async (action = {}) => {
+export const dispatch = async action => {
   run(action)
 
   if (action.type === "start") {
