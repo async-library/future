@@ -2,7 +2,6 @@ export const start = (state, payload) => {
   return {
     ...state,
     fn: payload.fn,
-    promise: payload.promise,
     status: "pending",
     data: payload.data || state.data,
     error: payload.data ? undefined : state.error,
