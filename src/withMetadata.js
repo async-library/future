@@ -1,4 +1,4 @@
-export default function withMetadata(state, action = {}) {
+export default function withMetadata(state, action) {
   const { startedCount = 0, finishedCount = 0, startedAt, finishedAt } = state
   switch (action.type) {
     case "start":

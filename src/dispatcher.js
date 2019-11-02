@@ -1,4 +1,4 @@
-import { fulfill, reject } from "./actionCreators"
+import { init, fulfill, reject } from "./actionCreators"
 
 const callbacks = []
 const run = action => callbacks.forEach(callback => callback && callback(action))
@@ -7,7 +7,7 @@ const remove = id => (callbacks[id] = undefined)
 
 export const register = callback => {
   const id = add(callback)
-  callback({ type: "init" })
+  callback(init({}))
   return () => remove(id)
 }
 

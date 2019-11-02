@@ -1,3 +1,14 @@
+export const init = (state, payload) => {
+  return {
+    ...state,
+    fn: payload.fn,
+    status: "initial",
+    data: payload.data,
+    error: payload.error,
+    settled: false,
+  }
+}
+
 export const start = (state, payload) => {
   return {
     ...state,
@@ -5,6 +16,7 @@ export const start = (state, payload) => {
     status: "pending",
     data: payload.data || state.data,
     error: payload.data ? undefined : state.error,
+    settled: state.settled,
   }
 }
 
@@ -14,10 +26,11 @@ export const fulfill = (state, payload) => {
   }
   return {
     ...state,
-    settled: true,
+    fn: state.fn,
     status: "fulfilled",
     data: payload.data,
     error: undefined,
+    settled: true,
   }
 }
 
@@ -27,9 +40,11 @@ export const reject = (state, payload) => {
   }
   return {
     ...state,
-    settled: true,
+    fn: state.fn,
     status: "rejected",
+    data: state.data,
     error: payload.error,
+    settled: true,
   }
 }
 

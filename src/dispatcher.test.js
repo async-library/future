@@ -12,7 +12,10 @@ it("allows registering a callback that is invoked on dispatch", () => {
 it("initializes the callback on register", () => {
   const callback = jest.fn()
   register(callback)
-  expect(callback).toHaveBeenCalledWith({ type: "init" })
+  expect(callback).toHaveBeenCalledWith({
+    type: "init",
+    payload: { data: undefined, error: undefined },
+  })
 })
 
 it("allows unregistering a registered callback", () => {

@@ -1,5 +1,5 @@
-import { start, fulfill, reject, cancel } from "./actionCreators"
-import { initialState, stateReducer, compose } from "./reducer"
+import { init, start, fulfill, reject, cancel } from "./actionCreators"
+import { stateReducer, compose } from "./reducer"
 import withAbortController from "./withAbortController"
 import withMetadata from "./withMetadata"
 
@@ -9,17 +9,12 @@ const reducer = compose(
   withAbortController,
 )
 
-describe("without state", () => {
-  it("returns the initial state", () => {
-    const result = stateReducer()
-    expect(result).toBe(initialState)
-  })
-})
+const initialState = reducer({}, init({}))
 
-describe("without action", () => {
+describe("with unknown action", () => {
   it("passes state verbatim", () => {
     const state = { status: "pending" }
-    const result = stateReducer(state)
+    const result = stateReducer(state, { type: "unknown" })
     expect(result).toBe(state)
   })
 })

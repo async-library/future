@@ -3,13 +3,7 @@ import withAbortController from "./withAbortController"
 import withMetadata from "./withMetadata"
 import withStatusProps from "./withStatusProps"
 
-export const initialState = {
-  status: "initial",
-  data: undefined,
-  error: undefined,
-}
-
-export const stateReducer = (state = initialState, action = {}) => {
+export const stateReducer = (state, action) => {
   const handler = actionHandlers[action.type] || (state => state)
   return handler(state, action.payload || {})
 }

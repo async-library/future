@@ -1,4 +1,33 @@
-import { start, fulfill, reject, cancel } from "./actionHandlers"
+import { init, start, fulfill, reject, cancel } from "./actionHandlers"
+
+describe("init", () => {
+  it("defines the initial state", () => {
+    const result = init({}, {})
+    expect(result).toEqual(
+      expect.objectContaining({
+        fn: undefined,
+        status: "initial",
+        data: undefined,
+        error: undefined,
+        settled: false,
+      }),
+    )
+  })
+
+  it("retains unrelated state props", () => {
+    const state = { a: 1 }
+    const result = init(state, {})
+    expect(result).toEqual(expect.objectContaining(state))
+  })
+
+  it("accepts initial data and error", () => {
+    const data = { a: 1 }
+    const error = new Error("oops")
+    const result = init({}, { data, error })
+    expect(result.data).toBe(data)
+    expect(result.error).toBe(error)
+  })
+})
 
 describe("start", () => {
   it("updates status and fn", () => {
