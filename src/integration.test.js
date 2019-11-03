@@ -123,12 +123,13 @@ it("ignores outdated promises on subsequent runs", async () => {
   expect(state.data).toBe("two")
 })
 
-// it("supports adding new data to old data", async () => {
-//   const fn = (params, state) => Promise.resolve(state.concat(params))
-//   const app = createApp({ fn, initialValue: [] })
+it("supports adding new data to old data", async () => {
+  const values = { a: [1, 2], b: [3, 4] }
+  const fn = (key, state) => Promise.resolve(state.data.concat(values[key]))
+  const app = createApp({ fn, initialValue: [] })
 
-//   await app.run([1, 2])
-//   await app.run([3, 4])
+  await app.run("a")
+  await app.run("b")
 
-//   expect(state.data).toEqual([1, 2, 3, 4])
-// })
+  expect(state.data).toEqual([1, 2, 3, 4])
+})
