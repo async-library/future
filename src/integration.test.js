@@ -1,5 +1,7 @@
 import createIntegration from "./integration"
 
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
+
 let state
 const getState = () => state
 const setState = value => (state = value)
@@ -132,4 +134,26 @@ it("supports adding new data to old data", async () => {
   await app.run("b")
 
   expect(state.data).toEqual([1, 2, 3, 4])
+})
+
+it("supports subscriptions", async () => {
+  const fn = (fulfill, reject) => {
+    setTimeout(fulfill, 10, "one")
+    setTimeout(fulfill, 20, "two")
+    setTimeout(reject, 30, new Error("oops"))
+    return "zero"
+  }
+  const app = createApp({ fn })
+
+  app.subscribe()
+  expect(state.data).toBe("zero")
+
+  await delay(10)
+  expect(state.data).toBe("one")
+
+  await delay(10)
+  expect(state.data).toBe("two")
+
+  await delay(10)
+  expect(state.error.message).toBe("oops")
 })

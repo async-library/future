@@ -35,10 +35,10 @@ it("dispatches actions to all registered callbacks", () => {
   expect(callback).toHaveBeenCalledTimes(10)
 })
 
-it("invokes the provided function on start, without arguments", () => {
+it("invokes the provided function on start", () => {
   const fn = jest.fn()
   dispatch(start({ fn }))
-  expect(fn).toHaveBeenCalledWith()
+  expect(fn).toHaveBeenCalled()
 })
 
 describe("with synchronous fn", () => {
@@ -119,8 +119,8 @@ describe("with thunk function as action", () => {
       _dispatch(start({ fn: fn1 }))
       _dispatch(start({ fn: fn2 }))
     })
-    expect(fn1).toHaveBeenCalledWith()
-    expect(fn2).toHaveBeenCalledWith()
+    expect(fn1).toHaveBeenCalled()
+    expect(fn2).toHaveBeenCalled()
     expect(callback).toHaveBeenCalledWith({ type: "start", payload: { fn: fn1 } })
     expect(callback).toHaveBeenCalledWith({ type: "start", payload: { fn: fn2 } })
   })

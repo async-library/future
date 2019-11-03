@@ -22,7 +22,7 @@ export const dispatch = async (action, getState) => {
   if (action.type === "start") {
     const { fn } = action.payload
     try {
-      const result = fn()
+      const result = fn(data => run(fulfill({ fn, data })), error => run(reject({ fn, error })))
       const data = result instanceof Promise ? await result : result
       run(fulfill({ fn, data }))
     } catch (error) {
