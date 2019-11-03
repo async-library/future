@@ -1,23 +1,25 @@
-import createApp from "./integration"
+import createIntegration from "./integration"
 
 let state
 const getState = () => state
 const setState = value => (state = value)
 
-let app
-beforeEach(() => {
-  app = createApp(getState, setState)
-})
+let _app
+const createApp = options => {
+  _app = createIntegration({ getState, setState, ...options })
+  return _app
+}
 afterEach(() => {
-  app.destroy()
+  _app.destroy()
   state = undefined
 })
 
 it("runs to fulfilment", async () => {
   const data = { a: 1 }
   const fn = () => Promise.resolve(data)
+  const app = createApp({ fn })
 
-  const done = app.start({ fn })
+  const done = app.run()
   expect(state).toEqual(
     expect.objectContaining({
       status: "pending",
@@ -27,7 +29,6 @@ it("runs to fulfilment", async () => {
       finishedCount: 0,
       startedAt: expect.any(Date),
       finishedAt: undefined,
-      fn,
     }),
   )
 
@@ -48,8 +49,9 @@ it("runs to fulfilment", async () => {
 it("runs to rejection", async () => {
   const error = new Error("oops")
   const fn = () => Promise.reject(error)
+  const app = createApp({ fn })
 
-  const done = app.start({ fn })
+  const done = app.run()
   expect(state).toEqual(
     expect.objectContaining({
       status: "pending",
@@ -59,7 +61,6 @@ it("runs to rejection", async () => {
       finishedCount: 0,
       startedAt: expect.any(Date),
       finishedAt: undefined,
-      fn,
     }),
   )
 
@@ -78,12 +79,12 @@ it("runs to rejection", async () => {
 })
 
 it("returns to previous state when cancelled", async () => {
-  expect(state.status).toBe("initial")
-
   const data = { a: 1 }
   const fn = () => Promise.resolve(data)
+  const app = createApp({ fn })
+  expect(state.status).toBe("initial")
 
-  const done = app.start({ fn })
+  const done = app.run()
   expect(state.status).toBe("pending")
 
   app.cancel()
@@ -92,13 +93,13 @@ it("returns to previous state when cancelled", async () => {
 })
 
 it("ignores outdated promises on subsequent runs", async () => {
-  const fn1 = () => new Promise(resolve => setTimeout(resolve, 0, "one"))
-  const fn2 = () => new Promise(resolve => setTimeout(resolve, 10, "two"))
+  let ms = 0
+  const fn = arg => new Promise(resolve => setTimeout(resolve, (ms += 10), arg))
+  const app = createApp({ fn })
 
-  const one = app.start({ fn: fn1 })
-  const two = app.start({ fn: fn2 })
+  const one = app.run("one")
+  const two = app.run("two")
   expect(state.status).toBe("pending")
-  expect(state.fn).toBe(fn2)
 
   await one
   expect(state.status).toBe("pending")
@@ -108,9 +109,12 @@ it("ignores outdated promises on subsequent runs", async () => {
   expect(state.data).toBe("two")
 })
 
-it("supports adding new data to old data", () => {
-  app.start({ fn: () => [1, 2] })
-  app.start({ fn: () => [...state.data, 3, 4] })
+// it("supports adding new data to old data", async () => {
+//   const fn = (params, state) => Promise.resolve(state.concat(params))
+//   const app = createApp({ fn, initialValue: [] })
 
-  expect(state.data).toEqual([1, 2, 3, 4])
-})
+//   await app.run([1, 2])
+//   await app.run([3, 4])
+
+//   expect(state.data).toEqual([1, 2, 3, 4])
+// })

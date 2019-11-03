@@ -39,6 +39,16 @@ describe("start", () => {
     expect(result.fn).toBe(fn)
   })
 
+  it("retains old data and error", () => {
+    const data = { a: 1 }
+    const error = new Error("oops")
+    const state = { status: "rejected", data, error }
+    const result = start(state, {})
+    expect(result.status).toBe("pending")
+    expect(result.data).toBe(data)
+    expect(result.error).toBe(error)
+  })
+
   it("supports optimistic update", () => {
     const state = { status: "initial" }
     const payload = { data: "optimistic" }

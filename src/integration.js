@@ -1,14 +1,14 @@
-import * as actionCreators from "./actionCreators"
+import { start, cancel } from "./actionCreators"
+import { register, bind } from "./dispatcher"
 import reducer from "./reducer"
-import { register, dispatch } from "./dispatcher"
 
-const bindAction = actionCreator => (...args) => dispatch(actionCreator(...args))
-const boundActions = Object.keys(actionCreators).reduce(
-  (acc, key) => ({ ...acc, [key]: bindAction(actionCreators[key]) }),
-  {},
-)
-
-export default (getState, setState) => {
-  const destroy = register(action => setState(reducer(getState(), action)))
-  return { ...boundActions, destroy }
+export default ({ fn, getState, setState, initialValue }) => {
+  const initialState =
+    initialValue instanceof Error ? { error: initialValue } : { data: initialValue }
+  const destroy = register(action => setState(reducer(getState(), action)), initialState)
+  return {
+    run: params => bind(start)({ fn: () => fn(params, getState()) }),
+    cancel: bind(cancel),
+    destroy,
+  }
 }

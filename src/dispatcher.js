@@ -5,9 +5,9 @@ const run = action => callbacks.forEach(callback => callback && callback(action)
 const add = callback => callbacks.push(callback) - 1
 const remove = id => (callbacks[id] = undefined)
 
-export const register = callback => {
+export const register = (callback, initialState = {}) => {
   const id = add(callback)
-  callback(init({}))
+  callback(init(initialState))
   return () => remove(id)
 }
 
@@ -25,3 +25,5 @@ export const dispatch = async action => {
     }
   }
 }
+
+export const bind = actionCreator => (...args) => dispatch(actionCreator(...args))
