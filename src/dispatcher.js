@@ -11,7 +11,12 @@ export const register = (callback, initialState = {}) => {
   return () => remove(id)
 }
 
-export const dispatch = async action => {
+export const dispatch = async (action, getState) => {
+  if (typeof action === "function") {
+    action(dispatch, getState)
+    return
+  }
+
   run(action)
 
   if (action.type === "start") {
@@ -26,4 +31,5 @@ export const dispatch = async action => {
   }
 }
 
-export const bind = actionCreator => (...args) => dispatch(actionCreator(...args))
+export const bind = (actionCreator, getState) => (...args) =>
+  dispatch(actionCreator(...args), getState)
