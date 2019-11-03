@@ -14,6 +14,20 @@ afterEach(() => {
   state = undefined
 })
 
+it("accepts initial data", () => {
+  const data = { a: 1 }
+  createApp({ initialValue: data })
+  expect(state.status).toBe("initial")
+  expect(state.data).toBe(data)
+})
+
+it("accepts initial error", () => {
+  const error = new Error("not cool")
+  createApp({ initialValue: error })
+  expect(state.status).toBe("initial")
+  expect(state.error).toBe(error)
+})
+
 it("runs to fulfilment", async () => {
   const data = { a: 1 }
   const fn = () => Promise.resolve(data)
