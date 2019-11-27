@@ -9,7 +9,9 @@
     "test": "jest",
     "test:watch": "jest --watchAll"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@xstate/fsm": "1.1.0"
+  },
   "devDependencies": {
     "@babel/core": "7.6.2",
     "@babel/plugin-proposal-class-properties": "7.7.0",
