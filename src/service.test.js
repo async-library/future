@@ -1,4 +1,4 @@
-import createIntegration from "./integration"
+import createService from "./service"
 
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 
@@ -8,7 +8,7 @@ const setState = value => (state = value)
 
 let _app
 const createApp = options => {
-  _app = createIntegration({ getState, setState, ...options })
+  _app = createService({ getState, setState, ...options })
   return _app
 }
 afterEach(() => {

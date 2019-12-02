@@ -4,6 +4,6 @@ module.exports = {
   coverageDirectory: "<rootDir>/coverage",
   verbose: true,
   bail: true,
-  transform: { "^.+\\.js$": "babel-jest" },
+  transform: { "^.+\\.[tj]sx?$": "babel-jest" },
   testPathIgnorePatterns: ["/node_modules/", "/pkg/"],
 }
